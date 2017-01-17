@@ -20,7 +20,7 @@ public class MainActivity extends FragmentActivity {
     private ViewPagerIndicator mVpIndicator;
 
     //内容区域标题
-    private List<String> mTitles = Arrays.asList("短信", "收藏", "推荐");
+    private List<String> mTitles = Arrays.asList("短信", "收藏", "推荐", "短信1", "收藏1", "推荐1", "短信2", "收藏2", "推荐2");
 
     //内容显示区域的fragment
     private List<VpSimpleFragment> mContents = new ArrayList<VpSimpleFragment>();

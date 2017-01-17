@@ -1,13 +1,20 @@
 package com.quaie.wms.myapplication.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
+
+import com.quaie.wms.myapplication.R;
 
 /**
  * Created by yue on 2017/1/17.
@@ -50,6 +57,10 @@ public class ViewPagerIndicator extends LinearLayout {
     private int mInitTranslationX;
     //三角形移动时的位置
     private int mTranslationX;
+    //设置可见的tab数量
+    private int mTabVisibleCount;
+    //设置默认的tab数量
+    private static final int COUNT_TAB_DEFULT = 3;
 
     public ViewPagerIndicator(Context context) {
         this(context, null);
@@ -57,6 +68,17 @@ public class ViewPagerIndicator extends LinearLayout {
 
     public ViewPagerIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        //获取自定义属性，这里是可见tab的数量
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicator);
+
+        mTabVisibleCount = ta.getInt(R.styleable.ViewPagerIndicator_visible_tab_count, COUNT_TAB_DEFULT);
+
+        if (mTabVisibleCount < 0) {
+            mTabVisibleCount = COUNT_TAB_DEFULT;
+        }
+
+        ta.recycle();
 
         //初始化画笔
         mPaint = new Paint();
@@ -77,12 +99,47 @@ public class ViewPagerIndicator extends LinearLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         //三角形底边宽度：总宽度/条目数*占底边的比例
-        mTriangleWidth = (int) (w / 3 * RADIO_TRIANGLE_WIDTH);
+        mTriangleWidth = (int) (w / mTabVisibleCount * RADIO_TRIANGLE_WIDTH);
         //初始化三角形的位置：w/3 = 每个条目的宽度 ，w/3/2 = 每个条目一半的宽度，
         //w/3/2 - mTriangleWidth / 2 = 当前条目一半的宽度再向左边偏移 1/2个三角形底边宽度
-        mInitTranslationX = w / 3 / 2 - mTriangleWidth / 2;
+        mInitTranslationX = w / mTabVisibleCount / 2 - mTriangleWidth / 2;
 
         initTriangle();
+    }
+
+    //当XML加载完成后，会回调这个方法
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        //获取子view的个数
+        int cCount = getChildCount();
+
+        if (cCount == 0) {
+            return;
+        }
+        //获取子view
+        for (int i = 0; i < cCount; i++) {
+            View view = getChildAt(i);
+            LinearLayout.LayoutParams Llp = (LayoutParams) view.getLayoutParams();
+            Llp.weight = 0;
+            //设置tab宽度
+            Llp.width = getScreenWidth() / mTabVisibleCount;
+            view.setLayoutParams(Llp);
+        }
+
+    }
+
+    /**
+     * 获得屏幕宽度
+     *
+     * @return
+     */
+    private int getScreenWidth() {
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+
+        return outMetrics.widthPixels;
     }
 
     @Override
@@ -119,8 +176,18 @@ public class ViewPagerIndicator extends LinearLayout {
      * @param positionOffset
      */
     public void scroll(int position, float positionOffset) {
-        int tabWidth = getWidth() / 3;
+        int tabWidth = getWidth() / mTabVisibleCount;
         mTranslationX = (int) (tabWidth * (positionOffset + position));
+
+        if (position >= mTabVisibleCount - 2 && positionOffset > 0 && getChildCount() > mTabVisibleCount) {
+            if (mTabVisibleCount != 1) {
+                this.scrollTo((position - (mTabVisibleCount - 2)) * tabWidth + (int) (tabWidth * positionOffset), 0);
+                Log.e("11111", "ififif");
+            } else {
+                this.scrollTo(position * tabWidth + (int) (tabWidth * positionOffset), 0);
+                Log.e("11111", "elseelseelse");
+            }
+        }
 
         //确定了三角形的位置，接下来让三角形进行重绘
         invalidate();
