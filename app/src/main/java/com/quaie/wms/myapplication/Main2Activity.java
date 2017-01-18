@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//自定义viewpager联动效果1，用xml设置tab
-public class MainActivity extends FragmentActivity {
+//自定义viewpager联动效果2，不在xml文本中设置text，直接用代码创建tab
+public class Main2Activity extends FragmentActivity {
 
     private ViewPager mViewPager;
     private ViewPagerIndicator mVpIndicator;
@@ -31,7 +31,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
 
         initView();
         initData();
@@ -78,10 +78,16 @@ public class MainActivity extends FragmentActivity {
                 return mContents.size();
             }
         };
+
+        //给tab的title设置文本
+        mVpIndicator.setTabItemTitles(mTitles);
     }
 
     private void initView() {
         mViewPager = (ViewPager) findViewById(R.id.id_viewPager_main);
         mVpIndicator = (ViewPagerIndicator) findViewById(R.id.id_vpIndicator_main);
+
+        //指定可显示的tab数量
+        mVpIndicator.setmTabVisibleCount(5);
     }
 }

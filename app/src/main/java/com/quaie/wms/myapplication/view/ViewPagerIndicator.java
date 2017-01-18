@@ -10,11 +10,17 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.quaie.wms.myapplication.R;
+
+import java.util.List;
 
 /**
  * Created by yue on 2017/1/17.
@@ -61,6 +67,9 @@ public class ViewPagerIndicator extends LinearLayout {
     private int mTabVisibleCount;
     //设置默认的tab数量
     private static final int COUNT_TAB_DEFULT = 3;
+
+    //动态添加tab
+    private List<String> mTitles;
 
     public ViewPagerIndicator(Context context) {
         this(context, null);
@@ -197,5 +206,47 @@ public class ViewPagerIndicator extends LinearLayout {
 
         //确定了三角形的位置，接下来让三角形进行重绘
         invalidate();
+    }
+
+    /**
+     * 代码设置可见的tab数量，如果xml文件没有设置此值，需要在代码中设置此值，并且必须在setTabItemTitles()方法之前调用
+     *
+     * @param VisibleCount
+     */
+    public void setmTabVisibleCount(int VisibleCount) {
+        mTabVisibleCount = VisibleCount;
+    }
+
+    //根据titles手动创建tab，而不是在xml文件中
+    public void setTabItemTitles(List<String> titles) {
+        if (titles != null && titles.size() > 0) {
+            //清空控件中的所有view
+            this.removeAllViews();
+
+            //给title赋值
+            mTitles = titles;
+            for (String title : mTitles) {
+                //添加控件
+                addView(generateTextView(title));
+            }
+        }
+    }
+
+    /**
+     * 根据title创建tab
+     *
+     * @param title
+     * @return
+     */
+    private View generateTextView(String title) {
+        TextView textView = new TextView(getContext());
+        LinearLayout.LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        lp.width = getScreenWidth() / mTabVisibleCount;
+        textView.setText(title);
+        textView.setGravity(Gravity.CENTER);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        textView.setTextColor(Color.BLACK);
+        textView.setLayoutParams(lp);
+        return textView;
     }
 }
