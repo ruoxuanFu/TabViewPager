@@ -61,7 +61,7 @@ public class ViewPagerIndicator extends LinearLayout {
     private static final float RADIO_TRIANGLE_WIDTH = 1 / 6F;
     //三角形最大尺寸
     private final int TRIANGLE_MAXSIZE = (int) (getScreenWidth() / 3 * RADIO_TRIANGLE_WIDTH);
-    //三角形最大尺寸
+    //三角形最小尺寸
     private final int TRIANGLE_MINSIZE = (int) (getScreenWidth() / 5 * RADIO_TRIANGLE_WIDTH);
     //三角形初始化的偏移位置
     private int mInitTranslationX;
