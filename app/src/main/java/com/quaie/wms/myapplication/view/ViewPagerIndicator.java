@@ -159,13 +159,21 @@ public class ViewPagerIndicator extends LinearLayout {
      */
     private void initTriangle() {
 
-        mTriangleHeight = mTriangleWidth / 2;
-
-        mPath = new Path();
-        mPath.moveTo(0, 0);
-        mPath.lineTo(mTriangleWidth, 0);
-        mPath.lineTo(mTriangleWidth / 2, -mTriangleHeight);
-        mPath.close();
+        if (mTabVisibleCount == 1) {
+            mTriangleHeight = mTriangleWidth / 4;
+            mPath = new Path();
+            mPath.moveTo(0, 0);
+            mPath.lineTo(mTriangleWidth, 0);
+            mPath.lineTo(mTriangleWidth / 2, -mTriangleHeight);
+            mPath.close();
+        } else {
+            mTriangleHeight = mTriangleWidth / 2;
+            mPath = new Path();
+            mPath.moveTo(0, 0);
+            mPath.lineTo(mTriangleWidth, 0);
+            mPath.lineTo(mTriangleWidth / 2, -mTriangleHeight);
+            mPath.close();
+        }
     }
 
     /**
@@ -182,10 +190,8 @@ public class ViewPagerIndicator extends LinearLayout {
         if (position >= mTabVisibleCount - 2 && positionOffset > 0 && getChildCount() > mTabVisibleCount) {
             if (mTabVisibleCount != 1) {
                 this.scrollTo((position - (mTabVisibleCount - 2)) * tabWidth + (int) (tabWidth * positionOffset), 0);
-                Log.e("11111", "ififif");
             } else {
                 this.scrollTo(position * tabWidth + (int) (tabWidth * positionOffset), 0);
-                Log.e("11111", "elseelseelse");
             }
         }
 

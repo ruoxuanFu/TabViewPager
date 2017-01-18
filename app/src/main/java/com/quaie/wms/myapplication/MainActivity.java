@@ -40,7 +40,7 @@ public class MainActivity extends FragmentActivity {
         mViewPager.setAdapter(mAdapter);
 
         //设置三角形滑动
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 mVpIndicator.scroll(position, positionOffset);
