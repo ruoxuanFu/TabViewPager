@@ -39,23 +39,9 @@ public class MainActivity extends FragmentActivity {
         //给ViewPager设置adapter
         mViewPager.setAdapter(mAdapter);
 
-        //设置三角形滑动
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                mVpIndicator.scroll(position, positionOffset);
-            }
+        //设置viewpager设置三角形滑动
+        mVpIndicator.setViewPager(mViewPager, 0);
 
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
     private void initData() {

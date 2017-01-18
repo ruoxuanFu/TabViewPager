@@ -7,13 +7,12 @@ import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -67,9 +66,27 @@ public class ViewPagerIndicator extends LinearLayout {
     private int mTabVisibleCount;
     //设置默认的tab数量
     private static final int COUNT_TAB_DEFULT = 3;
-
     //动态添加tab
     private List<String> mTitles;
+    //设置进来的viewpager
+    private ViewPager mViewPager;
+
+    //由于viewpager的滑动监听被占用，所以这里再实现一个滑动监听viewpager
+    public interface OnPageChangeListener {
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+
+        public void onPageSelected(int position);
+
+        public void onPageScrollStateChanged(int state);
+    }
+
+    //自定义接口的成员
+    public OnPageChangeListener mListener;
+
+    //自定义接口对外开放的set方法
+    public void setOnPageChangeListener(OnPageChangeListener listener) {
+        this.mListener = listener;
+    }
 
     public ViewPagerIndicator(Context context) {
         this(context, null);
@@ -248,5 +265,46 @@ public class ViewPagerIndicator extends LinearLayout {
         textView.setTextColor(Color.BLACK);
         textView.setLayoutParams(lp);
         return textView;
+    }
+
+    /**
+     * 设置关联的viewpager和当前选中的位置
+     *
+     * @param viewPager
+     * @param pos
+     */
+    public void setViewPager(ViewPager viewPager, int pos) {
+        mViewPager = viewPager;
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                scroll(position, positionOffset);
+
+                //设置自定义接口的回调
+                if (mListener != null) {
+                    mListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                //设置自定义接口的回调
+                if (mListener != null) {
+                    mListener.onPageSelected(position);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+                //设置自定义接口的回调
+                if (mListener != null) {
+                    mListener.onPageScrollStateChanged(state);
+                }
+            }
+        });
+
+        mViewPager.setCurrentItem(pos);
     }
 }
