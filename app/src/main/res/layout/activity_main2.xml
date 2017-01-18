@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:background="#d3d3d3"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:color_tab_highlight="@color/colorPrimary">
 
     </com.quaie.wms.myapplication.view.ViewPagerIndicator>
 

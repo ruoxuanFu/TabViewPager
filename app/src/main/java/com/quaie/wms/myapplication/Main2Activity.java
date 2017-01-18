@@ -72,6 +72,6 @@ public class Main2Activity extends FragmentActivity {
         mVpIndicator = (ViewPagerIndicator) findViewById(R.id.id_vpIndicator_main);
 
         //指定可显示的tab数量
-        mVpIndicator.setmTabVisibleCount(5);
+        mVpIndicator.setmTabVisibleCount(3);
     }
 }

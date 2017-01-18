@@ -3,6 +3,7 @@
 
     <declare-styleable name="ViewPagerIndicator">
         <attr name="visible_tab_count" format="integer"></attr>
+        <attr name="color_tab_highlight" format="color"></attr>
     </declare-styleable>
 
 </resources>

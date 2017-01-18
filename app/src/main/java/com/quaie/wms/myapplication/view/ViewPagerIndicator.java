@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -58,6 +59,10 @@ public class ViewPagerIndicator extends LinearLayout {
     private int mTriangleHeight;
     //三角形底边宽度和vp的每一个tab的宽度的比例
     private static final float RADIO_TRIANGLE_WIDTH = 1 / 6F;
+    //三角形最大尺寸
+    private final int TRIANGLE_MAXSIZE = (int) (getScreenWidth() / 3 * RADIO_TRIANGLE_WIDTH);
+    //三角形最大尺寸
+    private final int TRIANGLE_MINSIZE = (int) (getScreenWidth() / 5 * RADIO_TRIANGLE_WIDTH);
     //三角形初始化的偏移位置
     private int mInitTranslationX;
     //三角形移动时的位置
@@ -70,6 +75,10 @@ public class ViewPagerIndicator extends LinearLayout {
     private List<String> mTitles;
     //设置进来的viewpager
     private ViewPager mViewPager;
+    //设置选中的tab颜色
+    private int mTabHighLightColor;
+    //tab默认的颜色
+    private int mDeTabHighLightColor = Color.BLACK;
 
     //由于viewpager的滑动监听被占用，所以这里再实现一个滑动监听viewpager
     public interface OnPageChangeListener {
@@ -104,6 +113,8 @@ public class ViewPagerIndicator extends LinearLayout {
             mTabVisibleCount = COUNT_TAB_DEFULT;
         }
 
+        mTabHighLightColor = ta.getColor(R.styleable.ViewPagerIndicator_color_tab_highlight, mDeTabHighLightColor);
+
         ta.recycle();
 
         //初始化画笔
@@ -126,6 +137,13 @@ public class ViewPagerIndicator extends LinearLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         //三角形底边宽度：总宽度/条目数*占底边的比例
         mTriangleWidth = (int) (w / mTabVisibleCount * RADIO_TRIANGLE_WIDTH);
+
+        if (TRIANGLE_MAXSIZE < mTriangleWidth) {
+            mTriangleWidth = TRIANGLE_MAXSIZE;
+        } else if (TRIANGLE_MINSIZE > mTriangleWidth) {
+            mTriangleWidth = TRIANGLE_MINSIZE;
+        }
+
         //初始化三角形的位置：w/3 = 每个条目的宽度 ，w/3/2 = 每个条目一半的宽度，
         //w/3/2 - mTriangleWidth / 2 = 当前条目一半的宽度再向左边偏移 1/2个三角形底边宽度
         mInitTranslationX = w / mTabVisibleCount / 2 - mTriangleWidth / 2;
@@ -153,6 +171,7 @@ public class ViewPagerIndicator extends LinearLayout {
             view.setLayoutParams(Llp);
         }
 
+        setItemClickEvent();
     }
 
     /**
@@ -184,22 +203,12 @@ public class ViewPagerIndicator extends LinearLayout {
      * 初始化三角形指示器
      */
     private void initTriangle() {
-
-        if (mTabVisibleCount == 1) {
-            mTriangleHeight = mTriangleWidth / 4;
-            mPath = new Path();
-            mPath.moveTo(0, 0);
-            mPath.lineTo(mTriangleWidth, 0);
-            mPath.lineTo(mTriangleWidth / 2, -mTriangleHeight);
-            mPath.close();
-        } else {
-            mTriangleHeight = mTriangleWidth / 2;
-            mPath = new Path();
-            mPath.moveTo(0, 0);
-            mPath.lineTo(mTriangleWidth, 0);
-            mPath.lineTo(mTriangleWidth / 2, -mTriangleHeight);
-            mPath.close();
-        }
+        mTriangleHeight = mTriangleWidth / 2;
+        mPath = new Path();
+        mPath.moveTo(0, 0);
+        mPath.lineTo(mTriangleWidth, 0);
+        mPath.lineTo(mTriangleWidth / 2, -mTriangleHeight);
+        mPath.close();
     }
 
     /**
@@ -246,6 +255,8 @@ public class ViewPagerIndicator extends LinearLayout {
                 //添加控件
                 addView(generateTextView(title));
             }
+
+            setItemClickEvent();
         }
     }
 
@@ -293,6 +304,8 @@ public class ViewPagerIndicator extends LinearLayout {
                 if (mListener != null) {
                     mListener.onPageSelected(position);
                 }
+
+                highLightTextView(position);
             }
 
             @Override
@@ -306,5 +319,54 @@ public class ViewPagerIndicator extends LinearLayout {
         });
 
         mViewPager.setCurrentItem(pos);
+        highLightTextView(pos);
     }
+
+    /**
+     * 设置选中高亮
+     *
+     * @param pos 高亮的位置
+     */
+    private void highLightTextView(int pos) {
+        //重置tab颜色
+        resetHighLightTextView();
+        //上色
+        View view = getChildAt(pos);
+        //判断
+        if (view instanceof TextView) {
+            ((TextView) view).setTextColor(mTabHighLightColor);
+        }
+    }
+
+    /**
+     * 重置tab的高亮
+     */
+    private void resetHighLightTextView() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            //判断
+            if (view instanceof TextView) {
+                ((TextView) view).setTextColor(mDeTabHighLightColor);
+            }
+        }
+    }
+
+    /**
+     * 设置tab点击事件
+     */
+    private void setItemClickEvent() {
+        int cCount = getChildCount();
+        for (int i = 0; i < cCount; i++) {
+            View view = getChildAt(i);
+            final int j = i;
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mViewPager.setCurrentItem(j);
+                }
+            });
+        }
+    }
+
+
 }
